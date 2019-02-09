@@ -43,6 +43,11 @@ def train_model_predict(x_train, y_train, del_E_input):
 app = flask.Flask(__name__)
 
 
+@app.route('', methods=['GET'])
+def home():
+    return '<h1>Welcome to pH Calculator</h1>'
+
+
 @app.route('/calculateph', methods=['POST'])
 def calculate_ph_value():
     print(request.json['R'])
