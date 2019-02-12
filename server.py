@@ -47,10 +47,9 @@ app = flask.Flask(__name__)
 def home():
     return '<h1>Welcome to pH Calculator</h1>'
 
-
-@app.route('/calculateph', methods=['POST'])
-def calculate_ph_value():
-    print(request.json['R'])
+@app.route('/calculatepHLinearReg', methods=['POST'])
+def calculate_pH_LinearReg():
+    # print(request.json['R'])
     R_in = request.json['R']
     G_in = request.json['G']
     B_in = request.json['B']
@@ -60,6 +59,7 @@ def calculate_ph_value():
     l0_star = request.json['l0_star']
     a0_star = request.json['a0_star']
     b0_star = request.json['b0_star']
+
     rgb_values = [(195, 151, 178), (184, 130, 166), (179, 136, 163),
                   (171, 148, 166), (153, 139, 156), (171, 163, 178)]
     x = []
@@ -68,7 +68,7 @@ def calculate_ph_value():
         l_star, a_star, b_star = find_l_a_b(r, g, b, X_n, Y_n, Z_n)
         del_E = find_delE(l_star, a_star, b_star, l0_star, a0_star, b0_star)
         x.append(del_E)
-    print(x)
+    # print(x)
     l_input, a_input, b_input = find_l_a_b(R_in, G_in, B_in, X_n, Y_n, Z_n)
     del_E_input = find_delE(l_input, a_input, b_input,
                             l0_star, a0_star, b0_star)
@@ -77,6 +77,28 @@ def calculate_ph_value():
         'pH': output_pH
     })
 
+@app.route('/calculatepHLinearEq', methods=['POST'])
+def calculate_pH_LinearEq():
+    # print(request.json['R'])
+    R_in = request.json['R']
+    G_in = request.json['G']
+    B_in = request.json['B']
+    X_n = request.json['X_n']
+    Y_n = request.json['Y_n']
+    Z_n = request.json['Z_n']
+    l0_star = request.json['l0_star']
+    a0_star = request.json['a0_star']
+    b0_star = request.json['b0_star']
+    m = request.json['m']
+    c = request.json['c']
+    
+    l_input, a_input, b_input = find_l_a_b(R_in, G_in, B_in, X_n, Y_n, Z_n)
+    del_E_input = find_delE(l_input, a_input, b_input,
+                            l0_star, a0_star, b0_star)
+    output_pH = (del_E_input - c)/m
+    return jsonify({
+        'pH': output_pH
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
